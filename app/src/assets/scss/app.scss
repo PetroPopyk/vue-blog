@@ -1,4 +1,6 @@
-html, body, #app {
+@import "shared";
+
+html, body, #app, #app > div {
   height: 100%;
 }
 
