@@ -7,40 +7,52 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    userProfile: {}
+    userProfile: {},
   },
   mutations: {
     setUserProfile(state, val) {
-      state.userProfile = val
-    }
+      state.userProfile = val;
+    },
   },
   actions: {
     signIn({ dispatch }, form) {
-      fb.auth.signInWithEmailAndPassword(form.email, form.password).then(user => {
-        dispatch('fetchUserProfile', user);
-      }).catch(err => {
-        console.log(err);
-      });
+      fb.auth
+        .signInWithEmailAndPassword(form.email, form.password)
+        .then((user) => {
+          dispatch("fetchUserProfile", user);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     signUp({ dispatch }, form) {
-      fb.auth.createUserWithEmailAndPassword(form.email, form.password).then(user => {
-        fb.usersCollection.doc(user.uid).set({
-          name: form.name
-        }).then(() => {
-          dispatch('fetchUserProfile', user);
+      fb.auth
+        .createUserWithEmailAndPassword(form.email, form.password)
+        .then((user) => {
+          fb.usersCollection
+            .doc(user.uid)
+            .set({
+              name: form.name,
+            })
+            .then(() => {
+              dispatch("fetchUserProfile", user);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      }).catch(err => {
-        console.log(err);
-      });
     },
 
     fetchUserProfile({ commit }, user) {
-      fb.usersCollection.doc(user.uid).get().then(userProfile => {
-        commit('setUserProfile', userProfile.data());
-        router.push('/');
-      });
-    }
+      fb.usersCollection
+        .doc(user.uid)
+        .get()
+        .then((userProfile) => {
+          commit("setUserProfile", userProfile.data());
+          router.push("/");
+        });
+    },
   },
   modules: {},
 });

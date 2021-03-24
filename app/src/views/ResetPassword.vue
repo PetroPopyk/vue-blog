@@ -1,9 +1,9 @@
 <template>
   <div class="auth-wrapper row valign-wrapper">
     <div class="z-depth-6 card-panel">
-      <form class="login-form" @submit.prevent @submit="signIn">
+      <form class="login-form" @submit.prevent @submit="resetPassword">
         <div class="row">
-          <h3>Sign-in</h3>
+          <h3>Reset password</h3>
         </div>
         <div class="row">
           <div class="input-field col s12">
@@ -11,7 +11,7 @@
               class="validate"
               id="email"
               type="email"
-              v-model="signInForm.email"
+              v-model="resetPasswordForm.email"
               required
             />
             <label for="email" data-error="wrong" data-success="right"
@@ -19,36 +19,23 @@
             >
           </div>
         </div>
-        <div class="row">
+        <div class="row" v-if="errorMessage">
           <div class="input-field col s12">
-            <input
-              id="password"
-              type="password"
-              v-model="signInForm.password"
-              required
-            />
-            <label for="password">Password</label>
+            <p class="error">{{ errorMessage }}</p>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <input
               type="submit"
-              value="Sign-in"
+              value="Reset"
               class="btn waves-effect waves-light col s12"
             />
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s6 m6 l6">
-            <p class="margin medium-small">
-              <router-link to="/sign-up">Create Account</router-link>
-            </p>
-          </div>
-          <div class="input-field col s6 m6 l6">
-            <p class="margin medium-small">
-              <router-link to="/reset-password">Forgot password?</router-link>
-            </p>
+          <div class="input-field col s12">
+            <router-link to="/sign-in">Back</router-link>
           </div>
         </div>
       </form>
@@ -60,17 +47,16 @@
 export default {
   data() {
     return {
-      signInForm: {
+      resetPasswordForm: {
         email: "",
-        password: "",
       },
+      errorMessage: null,
     };
   },
   methods: {
-    signIn() {
-      this.$store.dispatch("signIn", {
-        email: this.signInForm.email,
-        password: this.signInForm.password,
+    resetPassword() {
+      this.$store.dispatch("resetPassword", {
+        email: this.resetPasswordForm.email,
       });
     },
   },
