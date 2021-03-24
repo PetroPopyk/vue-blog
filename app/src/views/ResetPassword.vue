@@ -21,7 +21,7 @@
         </div>
         <div class="row" v-if="errorMessage">
           <div class="input-field col s12">
-            <p class="error">{{ errorMessage }}</p>
+            <span class="red-text">{{ errorMessage }}</span>
           </div>
         </div>
         <div class="row">
@@ -44,6 +44,9 @@
 </template>
 
 <script>
+import { auth } from "@/firebase";
+import router from "@/router";
+
 export default {
   data() {
     return {
@@ -55,9 +58,15 @@ export default {
   },
   methods: {
     resetPassword() {
-      this.$store.dispatch("resetPassword", {
-        email: this.resetPasswordForm.email,
-      });
+      this.errorMessage = null;
+      auth
+        .sendPasswordResetEmail(this.resetPasswordForm.email)
+        .then(() => {
+          router.push("/sign-in");
+        })
+        .catch((err) => {
+          this.errorMessage = err;
+        });
     },
   },
 };

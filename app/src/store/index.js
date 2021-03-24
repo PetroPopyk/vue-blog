@@ -15,28 +15,30 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    // eslint-disable-next-line no-unused-vars
     signIn({ dispatch }, form) {
       fb.auth
         .signInWithEmailAndPassword(form.email, form.password)
-        .then((user) => {
-          dispatch("fetchUserProfile", user);
+        .then(() => {
+          router.push("/");
         })
         .catch((err) => {
           console.log(err);
         });
     },
 
+    // eslint-disable-next-line no-unused-vars
     signUp({ dispatch }, form) {
       fb.auth
         .createUserWithEmailAndPassword(form.email, form.password)
         .then((user) => {
           fb.usersCollection
-            .doc(user.uid)
+            .doc(user.user.uid)
             .set({
               name: form.name,
             })
             .then(() => {
-              dispatch("fetchUserProfile", user);
+              router.push("/");
             });
         })
         .catch((err) => {
@@ -50,8 +52,14 @@ export default new Vuex.Store({
         .get()
         .then((userProfile) => {
           commit("setUserProfile", userProfile.data());
-          router.push("/");
         });
+    },
+
+    logout({ commit }) {
+      fb.auth.signOut().then(() => {
+        commit("setUserProfile", {});
+        router.push("/sign-in");
+      });
     },
   },
   modules: {},

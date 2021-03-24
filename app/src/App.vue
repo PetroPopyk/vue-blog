@@ -1,8 +1,26 @@
 <template>
   <div id="app">
+    <Navbar v-if="showNav"></Navbar>
     <router-view />
   </div>
 </template>
+
+<script>
+import Navbar from "@/components/Navbar";
+import { mapState } from "vuex";
+
+export default {
+  components: {
+    Navbar,
+  },
+  computed: {
+    ...mapState(["userProfile"]),
+    showNav() {
+      return Object.keys(this.userProfile).length > 0;
+    },
+  },
+};
+</script>
 
 <style lang="scss">
 #app {
