@@ -22,6 +22,7 @@
         <div class="row">
           <div class="input-field col s12">
             <input
+              class="validate"
               id="password"
               type="password"
               v-model="signInForm.password"

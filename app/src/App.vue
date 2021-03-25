@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Navbar v-if="showNav"></Navbar>
+    <Navbar v-if="userLoggedIn"></Navbar>
     <router-view />
   </div>
 </template>
@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     ...mapState(["userProfile"]),
-    showNav() {
+    userLoggedIn() {
       return Object.keys(this.userProfile).length > 0;
     },
   },

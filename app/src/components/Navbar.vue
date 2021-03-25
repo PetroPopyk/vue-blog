@@ -1,9 +1,11 @@
 <template>
   <nav class="nav-wrapper">
     <div class="container row">
-      <div class="col">
-        <router-link to="/">Dashboard</router-link>
-      </div>
+      <ul>
+        <li>
+          <router-link to="/">Dashboard</router-link>
+        </li>
+      </ul>
       <ul class="right">
         <li>
           <router-link to="/settings">Settings</router-link>
@@ -29,6 +31,7 @@ export default {
 <style lang="scss" scoped>
 .nav-wrapper {
   background: #2bbbad;
+  position: absolute;
   a {
     font-size: 18px;
   }
