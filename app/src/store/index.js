@@ -21,7 +21,7 @@ const store = new Vuex.Store({
       state.userProfile = userProfile;
     },
     setPosts(state, data) {
-      data.posts.map(newPost => {
+      data.posts.map((newPost) => {
         if (!state.posts.data.find((oldPost) => oldPost.id === newPost.id)) {
           state.posts.data.push(newPost);
         }
@@ -130,7 +130,7 @@ const store = new Vuex.Store({
 
 fb.postsCollection
   .orderBy("createdOn", "desc")
-  .startAfter(store.state.posts.recentlyCreated ? {} : store.state.posts.last)
+  .startAfter(store.state.posts.last)
   .limit(3)
   .onSnapshot((snapshot) => {
     const posts = [];

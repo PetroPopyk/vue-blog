@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import { auth } from "@/firebase";
 import "./assets/scss/app.scss";
+import "./utils/filters/filters";
 
 Vue.config.productionTip = false;
 

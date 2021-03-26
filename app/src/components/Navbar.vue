@@ -32,6 +32,7 @@ export default {
 .nav-wrapper {
   background: #2bbbad;
   position: absolute;
+  z-index: 1;
   a {
     font-size: 18px;
   }

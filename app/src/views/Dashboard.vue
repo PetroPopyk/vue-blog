@@ -1,5 +1,13 @@
 <template>
   <div class="dashboard-wrapper" v-if="userLoggedIn">
+    <transition name="fade">
+      <Post
+        v-if="showPostModal"
+        :post="selectedPost"
+        @close="viewFullPost()"
+      ></Post>
+    </transition>
+
     <div class="row">
       <div class="card-panel col s4 left-align z-depth-6">
         <form @submit.prevent @submit="createPost">
@@ -48,7 +56,7 @@
             <p>
               <span>{{ post.comments }} comments</span>
               <span>{{ post.likes }} likes </span>
-              <a>View...</a>
+              <a @click="viewFullPost(post)">View...</a>
             </p>
           </div>
         </template>
@@ -71,15 +79,20 @@
 
 <script>
 import { mapState } from "vuex";
-import moment from "moment";
+import Post from "@/components/Post";
 
 export default {
+  components: {
+    Post,
+  },
   data() {
     return {
       createPostForm: {
         title: "",
         text: "",
       },
+      showPostModal: false,
+      selectedPost: {},
     };
   },
   computed: {
@@ -97,10 +110,11 @@ export default {
     getMorePosts() {
       this.$store.dispatch("getMorePosts");
     },
-  },
-  filters: {
-    date(date) {
-      return moment(date).calendar();
+    viewFullPost(post) {
+      this.showPostModal = !this.showPostModal;
+      this.showPostModal
+        ? (this.selectedPost = post)
+        : (this.selectedPost = {});
     },
   },
 };
@@ -110,6 +124,7 @@ export default {
 .dashboard-wrapper {
   padding: 120px 15%;
   background: #d0e8e6;
+  position: relative;
 
   .card-panel {
     padding: 15px;
@@ -122,6 +137,12 @@ export default {
     a {
       cursor: pointer;
       float: right;
+    }
+
+    h6 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &:last-child {
