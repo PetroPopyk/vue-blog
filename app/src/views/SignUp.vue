@@ -77,11 +77,7 @@ export default {
   },
   methods: {
     signUp() {
-      this.$store.dispatch("signUp", {
-        name: this.signUpForm.name,
-        email: this.signUpForm.email,
-        password: this.signUpForm.password,
-      });
+      this.$store.dispatch("signUp", this.signUpForm);
     },
   },
 };

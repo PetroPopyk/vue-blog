@@ -88,9 +88,8 @@ const store = new Vuex.Store({
       store.commit("setRecentlyPushed", true);
       fb.postsCollection
         .add({
+          ...post,
           createdOn: new Date().toISOString(),
-          title: post.title,
-          text: post.text,
           userId: fb.auth.currentUser.uid,
           userName: state.userProfile.name,
           comments: 0,
@@ -119,6 +118,23 @@ const store = new Vuex.Store({
             posts.push(post);
           });
           store.commit("setPosts", { posts, lastPost });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    addComment({ state }, comment) {
+      fb.commentsCollection
+        .add({
+          ...comment,
+          createdOn: new Date().toISOString(),
+          userId: fb.auth.currentUser.uid,
+          userName: state.userProfile.name,
+        })
+        .then(() => {
+          fb.postsCollection.doc(comment.postId).update({
+            comments: parseInt(comment.commentsCount) + 1,
+          });
         })
         .catch((err) => {
           console.log(err);

@@ -69,10 +69,7 @@ export default {
   },
   methods: {
     signIn() {
-      this.$store.dispatch("signIn", {
-        email: this.signInForm.email,
-        password: this.signInForm.password,
-      });
+      this.$store.dispatch("signIn", this.signInForm);
     },
   },
 };
