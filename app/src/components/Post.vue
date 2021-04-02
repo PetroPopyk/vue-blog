@@ -1,7 +1,17 @@
 <template>
   <div class="overlay" @click="closeModal()">
-    <div class="card-panel left-align col s12" @click.stop v-if="comments !== null">
-      <h4>{{ post.title }}</h4>
+    <div
+      class="card-panel left-align col s12"
+      @click.stop
+      v-if="comments !== null"
+    >
+      <div class="flex justify-between align-center">
+        <h4>{{ post.title }}</h4>
+        <div class="flex align-center">
+          <span class="heart-icon">&#9829;</span>
+          <span>{{ post.likes }}</span>
+        </div>
+      </div>
       <p>{{ post.text }}</p>
       <p class="grey-text">
         Posted by {{ post.userName }} - {{ post.createdOn | date }}
@@ -116,6 +126,14 @@ export default {
 
   .card-panel {
     width: 60%;
+
+    .heart-icon {
+      float: right;
+      font-size: 30px;
+      line-height: 2.28rem;
+      color: #d0e8e6;
+      margin-right: 4px;
+    }
 
     .border {
       height: 1px;
