@@ -1,6 +1,6 @@
 <template>
   <div class="overlay" @click="closeModal()">
-    <div class="card-panel left-align col s12" @click.stop>
+    <div class="card-panel left-align col s12" @click.stop v-if="comments !== null">
       <h4>{{ post.title }}</h4>
       <p>{{ post.text }}</p>
       <p class="grey-text">
@@ -60,12 +60,13 @@ export default {
   props: ["post"],
   data() {
     return {
-      comments: [],
+      comments: null,
       addCommentForm: {
         text: "",
         postId: this.post.id,
         commentsCount: this.post.comments,
       },
+      commentListener: null,
     };
   },
   beforeMount() {
@@ -73,14 +74,14 @@ export default {
   },
   methods: {
     closeModal() {
-      this.$emit("close");
+      this.$emit("close", this.comments.length);
     },
     addComment() {
       this.$store.dispatch("addComment", this.addCommentForm);
       this.addCommentForm.text = "";
     },
     getComments() {
-      fb.commentsCollection
+      this.commentListener = fb.commentsCollection
         .where("postId", "==", this.post.id)
         .orderBy("createdOn", "desc")
         .onSnapshot((snapshot) => {
@@ -93,6 +94,9 @@ export default {
           this.comments = comments;
         });
     },
+  },
+  beforeDestroy() {
+    this.commentListener();
   },
 };
 </script>

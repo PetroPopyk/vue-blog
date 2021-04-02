@@ -4,7 +4,7 @@
       <Post
         v-if="showPostModal"
         :post="selectedPost"
-        @close="viewFullPost()"
+        @close="viewFullPost"
       ></Post>
     </transition>
 
@@ -113,11 +113,16 @@ export default {
     getPosts() {
       this.$store.dispatch("getPosts");
     },
-    viewFullPost(post) {
+    viewFullPost(data) {
       this.showPostModal = !this.showPostModal;
-      this.showPostModal
-        ? (this.selectedPost = post)
-        : (this.selectedPost = {});
+      if (this.showPostModal) {
+        this.selectedPost = data;
+      } else {
+        this.posts.data.find(
+          (post) => post.id === this.selectedPost.id
+        ).comments = data;
+        this.selectedPost = {};
+      }
     },
   },
 };

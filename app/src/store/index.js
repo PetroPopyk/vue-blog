@@ -114,8 +114,11 @@ const store = new Vuex.Store({
       };
       fb.postsCollection
         .add(payload)
-        .then(() => {
-          commit("setPosts", { posts: [payload] });
+        .then((doc) => {
+          doc.get().then((postSnapshot) => {
+            const post = { ...postSnapshot.data(), id: doc.id };
+            commit("setPosts", { posts: [post] });
+          });
         })
         .catch((err) => {
           console.log(err);
