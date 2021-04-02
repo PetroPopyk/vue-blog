@@ -68,6 +68,9 @@ export default {
       },
     };
   },
+  beforeMount() {
+    this.getComments();
+  },
   methods: {
     closeModal() {
       this.$emit("close");
@@ -90,9 +93,6 @@ export default {
           this.comments = comments;
         });
     },
-  },
-  beforeMount() {
-    this.getComments();
   },
 };
 </script>

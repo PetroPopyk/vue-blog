@@ -66,7 +66,7 @@
           v-if="posts.data.length && !posts.isLast"
         >
           <input
-            @click="getMorePosts()"
+            @click="getPosts()"
             type="button"
             value="Load more..."
             class="btn waves-effect waves-light col s12"
@@ -85,6 +85,12 @@ export default {
   components: {
     Post,
   },
+  computed: {
+    ...mapState(["userProfile", "posts"]),
+    userLoggedIn() {
+      return Object.keys(this.userProfile).length > 0;
+    },
+  },
   data() {
     return {
       createPostForm: {
@@ -95,11 +101,8 @@ export default {
       selectedPost: {},
     };
   },
-  computed: {
-    ...mapState(["userProfile", "posts"]),
-    userLoggedIn() {
-      return Object.keys(this.userProfile).length > 0;
-    },
+  beforeMount() {
+    this.getPosts();
   },
   methods: {
     createPost() {
@@ -107,8 +110,8 @@ export default {
       this.createPostForm.title = "";
       this.createPostForm.text = "";
     },
-    getMorePosts() {
-      this.$store.dispatch("getMorePosts");
+    getPosts() {
+      this.$store.dispatch("getPosts");
     },
     viewFullPost(post) {
       this.showPostModal = !this.showPostModal;

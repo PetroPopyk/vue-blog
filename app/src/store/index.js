@@ -13,7 +13,6 @@ const store = new Vuex.Store({
       data: [],
       last: {},
       isLast: false,
-      recentlyCreated: false,
     },
   },
   mutations: {
@@ -21,19 +20,18 @@ const store = new Vuex.Store({
       state.userProfile = userProfile;
     },
     setPosts(state, data) {
-      data.posts.map((newPost) => {
-        if (!state.posts.data.find((oldPost) => oldPost.id === newPost.id)) {
-          state.posts.data.push(newPost);
+      state.posts.data = orderBy(
+        [...state.posts.data, ...data.posts],
+        ["createdOn"],
+        ["desc"]
+      );
+      if (data.lastPost) {
+        state.posts.last = data.lastPost;
+
+        if (data.posts.length < 3) {
+          state.posts.isLast = true;
         }
-      });
-      state.posts.data = orderBy(state.posts.data, ["createdOn"], ["desc"]);
-      state.posts.last = data.lastPost;
-      if (data.posts.length < 3) {
-        state.posts.isLast = true;
       }
-    },
-    setRecentlyPushed(state, val) {
-      state.posts.recentlyCreated = val;
     },
   },
   actions: {
@@ -83,27 +81,8 @@ const store = new Vuex.Store({
         router.push("/sign-in");
       });
     },
-    // eslint-disable-next-line no-unused-vars
-    createPost({ state, commit }, post) {
-      store.commit("setRecentlyPushed", true);
-      fb.postsCollection
-        .add({
-          ...post,
-          createdOn: new Date().toISOString(),
-          userId: fb.auth.currentUser.uid,
-          userName: state.userProfile.name,
-          comments: 0,
-          likes: 0,
-        })
-        .finally(() => {
-          store.commit("setRecentlyPushed", false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // eslint-disable-next-line no-unused-vars
-    getMorePosts() {
+
+    getPosts({ commit }) {
       fb.postsCollection
         .orderBy("createdOn", "desc")
         .startAfter(store.state.posts.last)
@@ -117,20 +96,41 @@ const store = new Vuex.Store({
             post.id = doc.id;
             posts.push(post);
           });
-          store.commit("setPosts", { posts, lastPost });
+          commit("setPosts", { posts, lastPost });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    addComment({ state }, comment) {
-      fb.commentsCollection
-        .add({
-          ...comment,
-          createdOn: new Date().toISOString(),
-          userId: fb.auth.currentUser.uid,
-          userName: state.userProfile.name,
+
+    createPost({ state, commit }, post) {
+      const payload = {
+        ...post,
+        createdOn: new Date().toISOString(),
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.name,
+        comments: 0,
+        likes: 0,
+      };
+      fb.postsCollection
+        .add(payload)
+        .then(() => {
+          commit("setPosts", { posts: [payload] });
         })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    addComment({ state }, comment) {
+      const payload = {
+        ...comment,
+        createdOn: new Date().toISOString(),
+        userId: fb.auth.currentUser.uid,
+        userName: state.userProfile.name,
+      };
+      fb.commentsCollection
+        .add(payload)
         .then(() => {
           fb.postsCollection.doc(comment.postId).update({
             comments: parseInt(comment.commentsCount) + 1,
@@ -143,22 +143,5 @@ const store = new Vuex.Store({
   },
   modules: {},
 });
-
-fb.postsCollection
-  .orderBy("createdOn", "desc")
-  .startAfter(store.state.posts.last)
-  .limit(3)
-  .onSnapshot((snapshot) => {
-    const posts = [];
-    const lastPost = store.state.posts.recentlyCreated
-      ? store.state.posts.last
-      : snapshot.docs[snapshot.docs.length - 1];
-    snapshot.forEach((doc) => {
-      let post = doc.data();
-      post.id = doc.id;
-      posts.push(post);
-    });
-    store.commit("setPosts", { posts, lastPost });
-  });
 
 export default store;
