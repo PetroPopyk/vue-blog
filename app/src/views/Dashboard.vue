@@ -44,6 +44,14 @@
 
       <div class="card-panel col s7 offset-s1 z-depth-6">
         <template v-if="posts.data.length">
+            <input
+                v-if="upcomingPosts.length > 0"
+                @click="getNewPosts()"
+                type="button"
+                value="New posts..."
+                class="btn grey waves-effect waves-light col s12 sticky"
+            />
+
           <div
             class="col s12 left-align"
             v-for="(post, index) in posts.data"
@@ -86,7 +94,7 @@ export default {
     Post,
   },
   computed: {
-    ...mapState(["userProfile", "posts"]),
+    ...mapState(["userProfile", "posts", "upcomingPosts"]),
     userLoggedIn() {
       return Object.keys(this.userProfile).length > 0;
     },
@@ -123,6 +131,9 @@ export default {
         ).comments = data;
         this.selectedPost = {};
       }
+    },
+    getNewPosts() {
+      this.$store.dispatch("getNewPosts");
     },
   },
 };
@@ -169,6 +180,12 @@ export default {
 
   .border {
     border-bottom: 1px solid #29bbad;
+  }
+
+  .sticky {
+    position: sticky;
+    top: 0;
+    left: 0;
   }
 }
 </style>

@@ -14,6 +14,7 @@ const store = new Vuex.Store({
       last: {},
       isLast: false,
     },
+    upcomingPosts: []
   },
   mutations: {
     setUserProfile(state, userProfile) {
@@ -31,6 +32,13 @@ const store = new Vuex.Store({
         if (data.posts.length < 3) {
           state.posts.isLast = true;
         }
+      }
+    },
+    setNewPosts(state, data) {
+      if (data) {
+        state.upcomingPosts.push(data);
+      } else {
+        state.upcomingPosts = [];
       }
     },
   },
@@ -103,6 +111,11 @@ const store = new Vuex.Store({
         });
     },
 
+    getNewPosts({ state, commit }) {
+      commit("setPosts", {posts: state.upcomingPosts});
+      commit("setNewPosts", null);
+    },
+
     createPost({ state, commit }, post) {
       const payload = {
         ...post,
@@ -146,5 +159,20 @@ const store = new Vuex.Store({
   },
   modules: {},
 });
+
+fb.postsCollection
+    .orderBy("createdOn", "desc")
+    .limit(1)
+    .onSnapshot((snapshot) => {
+      if (store.state.posts.data.length > 0) {
+        const newPostData = {...snapshot.docs[0].data(), id: snapshot.docs[0].id};
+        if (newPostData.userId !== fb.auth.currentUser.uid) {
+          console.log(newPostData);
+          if (!store.state.posts.data.find(post => post.id === newPostData.id)) {
+            store.commit("setNewPosts", newPostData);
+          }
+        }
+      }
+    });
 
 export default store;
