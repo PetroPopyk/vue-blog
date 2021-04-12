@@ -44,13 +44,13 @@
 
       <div class="card-panel col s7 offset-s1 z-depth-6">
         <template v-if="posts.data.length">
-            <input
-                v-if="upcomingPosts.length > 0"
-                @click="getNewPosts()"
-                type="button"
-                value="New posts..."
-                class="btn grey waves-effect waves-light col s12 sticky"
-            />
+          <input
+            v-if="upcomingPosts.length > 0"
+            @click="getNewPosts()"
+            type="button"
+            value="New posts..."
+            class="btn grey waves-effect waves-light col s12 sticky"
+          />
 
           <div
             class="col s12 left-align"
