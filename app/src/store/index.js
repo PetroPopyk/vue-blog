@@ -48,6 +48,13 @@ const store = new Vuex.Store({
       recentPost.comments = post.comments;
       recentPost.likes = post.likes;
     },
+    updateUpcomingPost(state, post) {
+      const recentPost = state.upcomingPosts.find(
+        (existedPost) => existedPost.id === post.id
+      );
+      recentPost.comments = post.comments;
+      recentPost.likes = post.likes;
+    },
   },
   actions: {
     // eslint-disable-next-line no-unused-vars
@@ -214,7 +221,15 @@ fb.postsCollection
         if (
           !store.state.posts.data.find((post) => post.id === newPostData.id)
         ) {
-          store.commit("setNewPosts", newPostData);
+          if (
+            !store.state.upcomingPosts.find(
+              (post) => post.id === newPostData.id
+            )
+          ) {
+            store.commit("setNewPosts", newPostData);
+          } else {
+            store.commit("updateUpcomingPost", newPostData);
+          }
         }
       }
 
