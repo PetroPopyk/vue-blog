@@ -41,6 +41,13 @@ const store = new Vuex.Store({
         state.upcomingPosts = [];
       }
     },
+    updateExistingPost(state, post) {
+      const recentPost = state.posts.data.find(
+        (existedPost) => existedPost.id === post.id
+      );
+      recentPost.comments = post.comments;
+      recentPost.likes = post.likes;
+    },
   },
   actions: {
     // eslint-disable-next-line no-unused-vars
@@ -100,9 +107,7 @@ const store = new Vuex.Store({
           const posts = [];
           const lastPost = snapshot.docs[snapshot.docs.length - 1];
           snapshot.forEach((doc) => {
-            let post = doc.data();
-            post.id = doc.id;
-            posts.push(post);
+            posts.push({ ...doc.data(), id: doc.id });
           });
           commit("setPosts", { posts, lastPost });
         })
@@ -138,9 +143,9 @@ const store = new Vuex.Store({
         });
     },
 
-    addComment({ state }, comment) {
+    addComment({ state }, data) {
       const payload = {
-        ...comment,
+        ...data,
         createdOn: new Date().toISOString(),
         userId: fb.auth.currentUser.uid,
         userName: state.userProfile.name,
@@ -148,8 +153,44 @@ const store = new Vuex.Store({
       fb.commentsCollection
         .add(payload)
         .then(() => {
-          fb.postsCollection.doc(comment.postId).update({
-            comments: parseInt(comment.commentsCount) + 1,
+          fb.postsCollection.doc(data.postId).update({
+            comments: parseInt(data.commentsCount) + 1,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    like({ dispatch }, data) {
+      const payload = {
+        ...data,
+        userId: fb.auth.currentUser.uid,
+      };
+      fb.likesCollection
+        .add(payload)
+        .then(() => {
+          fb.postsCollection.doc(data.postId).update({
+            likes: parseInt(data.likesCount) + 1,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    unlike({ dispatch }, data) {
+      const likeToRemove = data.find(
+        (like) => like.userId === fb.auth.currentUser.uid
+      );
+      fb.likesCollection
+        .doc(likeToRemove.id)
+        .delete()
+        .then(() => {
+          fb.postsCollection.doc(likeToRemove.postId).update({
+            likes: parseInt(data.length) - 1,
           });
         })
         .catch((err) => {
@@ -170,12 +211,15 @@ fb.postsCollection
         id: snapshot.docs[0].id,
       };
       if (newPostData.userId !== fb.auth.currentUser.uid) {
-        console.log(newPostData);
         if (
           !store.state.posts.data.find((post) => post.id === newPostData.id)
         ) {
           store.commit("setNewPosts", newPostData);
         }
+      }
+
+      if (store.state.posts.data.find((post) => post.id === newPostData.id)) {
+        store.commit("updateExistingPost", newPostData);
       }
     }
   });

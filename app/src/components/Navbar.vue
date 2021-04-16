@@ -8,9 +8,6 @@
       </ul>
       <ul class="right">
         <li>
-          <router-link to="/settings">Settings</router-link>
-        </li>
-        <li>
           <a @click="logout()">Sign-out</a>
         </li>
       </ul>

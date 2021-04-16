@@ -126,9 +126,6 @@ export default {
       if (this.showPostModal) {
         this.selectedPost = data;
       } else {
-        this.posts.data.find(
-          (post) => post.id === this.selectedPost.id
-        ).comments = data;
         this.selectedPost = {};
       }
     },

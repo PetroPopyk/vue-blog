@@ -8,8 +8,13 @@
       <div class="flex justify-between align-center">
         <h4>{{ post.title }}</h4>
         <div class="flex align-center">
-          <span class="heart-icon">&#9829;</span>
-          <span>{{ post.likes }}</span>
+          <span
+            class="heart-icon"
+            v-bind:class="{ liked: likes.find((e) => e.userId === userId) }"
+            @click="likes.find((e) => e.userId === userId) ? unlike() : like()"
+            >&#9829;</span
+          >
+          <span>{{ likes.length }}</span>
         </div>
       </div>
       <p>{{ post.text }}</p>
@@ -70,25 +75,39 @@ export default {
   props: ["post"],
   data() {
     return {
-      comments: null,
+      userId: fb.auth.currentUser.uid,
+      comments: [],
+      likes: [],
       addCommentForm: {
         text: "",
         postId: this.post.id,
         commentsCount: this.post.comments,
       },
+      likeForm: {
+        postId: this.post.id,
+        likesCount: this.post.likes,
+      },
       commentListener: null,
+      likesListener: null,
     };
   },
   beforeMount() {
     this.getComments();
+    this.getLikes();
   },
   methods: {
     closeModal() {
-      this.$emit("close", this.comments.length);
+      this.$emit("close");
     },
     addComment() {
       this.$store.dispatch("addComment", this.addCommentForm);
       this.addCommentForm.text = "";
+    },
+    like() {
+      this.$store.dispatch("like", this.likeForm);
+    },
+    unlike() {
+      this.$store.dispatch("unlike", this.likes);
     },
     getComments() {
       this.commentListener = fb.commentsCollection
@@ -97,16 +116,26 @@ export default {
         .onSnapshot((snapshot) => {
           const comments = [];
           snapshot.forEach((doc) => {
-            let comment = doc.data();
-            comment.id = doc.id;
-            comments.push(comment);
+            comments.push({ ...doc.data(), id: doc.id });
           });
           this.comments = comments;
+        });
+    },
+    getLikes() {
+      this.likesListener = fb.likesCollection
+        .where("postId", "==", this.post.id)
+        .onSnapshot((snapshot) => {
+          const likes = [];
+          snapshot.forEach((doc) => {
+            likes.push({ ...doc.data(), id: doc.id });
+          });
+          this.likes = likes;
         });
     },
   },
   beforeDestroy() {
     this.commentListener();
+    this.likesListener();
   },
 };
 </script>
@@ -133,6 +162,19 @@ export default {
       line-height: 2.28rem;
       color: #d0e8e6;
       margin-right: 4px;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        color: #2bbbad;
+      }
+
+      &.liked {
+        color: #2bbbad;
+        &:hover {
+          color: #d0e8e6;
+        }
+      }
     }
 
     .border {

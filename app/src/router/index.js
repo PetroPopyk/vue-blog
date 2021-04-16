@@ -35,14 +35,6 @@ const routes = [
     },
   },
   {
-    path: "/settings",
-    name: "Settings",
-    component: () => import("../views/Settings"),
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
     path: "/not-found",
     name: "Not-found",
     component: () => import("../views/NotFound"),
