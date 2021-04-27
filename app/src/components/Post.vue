@@ -3,7 +3,7 @@
     <div
       class="card-panel left-align col s12"
       @click.stop
-      v-if="comments !== null"
+      v-if="comments.length && likes.length"
     >
       <div class="flex justify-between align-center">
         <h4>{{ post.title }}</h4>
