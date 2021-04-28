@@ -2,6 +2,7 @@
   <div id="app">
     <Navbar v-if="userLoggedIn"></Navbar>
     <router-view />
+    <notifications position="bottom right"/>
   </div>
 </template>
 

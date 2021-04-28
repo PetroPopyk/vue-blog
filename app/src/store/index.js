@@ -65,7 +65,10 @@ const store = new Vuex.Store({
           router.push("/");
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -81,10 +84,17 @@ const store = new Vuex.Store({
             })
             .then(() => {
               router.push("/");
+              Vue.notify({
+                text: "Successfully signed-up!",
+                type: "success",
+              });
             });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -101,6 +111,10 @@ const store = new Vuex.Store({
       fb.auth.signOut().then(() => {
         commit("setUserProfile", {});
         router.push("/sign-in");
+        Vue.notify({
+          text: "Successfully logged-out!",
+          type: "success",
+        });
       });
     },
 
@@ -119,7 +133,10 @@ const store = new Vuex.Store({
           commit("setPosts", { posts, lastPost });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -143,10 +160,17 @@ const store = new Vuex.Store({
           doc.get().then((postSnapshot) => {
             const post = { ...postSnapshot.data(), id: doc.id };
             commit("setPosts", { posts: [post] });
+            Vue.notify({
+              text: "Post created!",
+              type: "success",
+            });
           });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -163,9 +187,16 @@ const store = new Vuex.Store({
           fb.postsCollection.doc(data.postId).update({
             comments: parseInt(data.commentsCount) + 1,
           });
+          Vue.notify({
+            text: "Comment added!",
+            type: "success",
+          });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -183,7 +214,10 @@ const store = new Vuex.Store({
           });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
 
@@ -201,7 +235,10 @@ const store = new Vuex.Store({
           });
         })
         .catch((err) => {
-          console.log(err);
+          Vue.notify({
+            text: err.message,
+            type: "error",
+          });
         });
     },
   },

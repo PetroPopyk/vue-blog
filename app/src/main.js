@@ -5,8 +5,9 @@ import store from "./store";
 import { auth } from "@/firebase";
 import "./assets/scss/app.scss";
 import "./utils/filters/filters";
+import Notifications from "vue-notification";
 
-Vue.config.productionTip = false;
+Vue.use(Notifications);
 
 let app;
 auth.onAuthStateChanged((user) => {

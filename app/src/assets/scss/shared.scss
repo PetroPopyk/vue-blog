@@ -1,3 +1,4 @@
+// Shared
 .auth-wrapper {
   background: #2bbbad;
 
@@ -7,6 +8,16 @@
   }
 }
 
+.vue-notification-group {
+  height: unset!important;
+
+  .vue-notification {
+    font-size: 16px!important;
+    padding: 15px!important;
+  }
+}
+
+// Helpers
 .relative {
   position: relative;
 }
