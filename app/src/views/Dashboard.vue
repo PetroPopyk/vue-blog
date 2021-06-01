@@ -4,7 +4,7 @@
       <Post
         v-if="showPostModal"
         :post="selectedPost"
-        @close="viewFullPost"
+        @close="triggerPostModal"
       ></Post>
     </transition>
 
@@ -48,7 +48,7 @@
             v-if="upcomingPosts.length > 0"
             @click="getNewPosts()"
             type="button"
-            value="New posts..."
+            v-bind:value="`New posts(${upcomingPosts.length})...`"
             class="btn grey waves-effect waves-light col s12 sticky"
           />
 
@@ -64,7 +64,7 @@
             <p>
               <span>{{ post.comments }} comments</span>
               <span>{{ post.likes }} likes </span>
-              <a @click="viewFullPost(post)">View...</a>
+              <a @click="triggerPostModal(post)">View...</a>
             </p>
           </div>
         </template>
@@ -121,7 +121,7 @@ export default {
     getPosts() {
       this.$store.dispatch("getPosts");
     },
-    viewFullPost(data) {
+    triggerPostModal(data) {
       this.showPostModal = !this.showPostModal;
       if (this.showPostModal) {
         this.selectedPost = data;

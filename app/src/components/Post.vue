@@ -3,7 +3,7 @@
     <div
       class="card-panel left-align col s12"
       @click.stop
-      v-if="comments.length && likes.length"
+      v-if="comments && likes"
     >
       <div class="flex justify-between align-center">
         <h4>{{ post.title }}</h4>
@@ -76,8 +76,8 @@ export default {
   data() {
     return {
       userId: fb.auth.currentUser.uid,
-      comments: [],
-      likes: [],
+      comments: null,
+      likes: null,
       addCommentForm: {
         text: "",
         postId: this.post.id,

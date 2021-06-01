@@ -46,6 +46,7 @@
 <script>
 import { auth } from "@/firebase";
 import router from "@/router";
+import Vue from "vue";
 
 export default {
   data() {
@@ -62,6 +63,10 @@ export default {
       auth
         .sendPasswordResetEmail(this.resetPasswordForm.email)
         .then(() => {
+          Vue.notify({
+            text: "Reset password instructions sent to the mail!",
+            type: "success",
+          });
           router.push("/sign-in");
         })
         .catch((err) => {

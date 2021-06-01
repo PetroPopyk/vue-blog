@@ -149,6 +149,7 @@ const store = new Vuex.Store({
       const payload = {
         ...post,
         createdOn: new Date().toISOString(),
+        modifiedOn: new Date().toISOString(),
         userId: fb.auth.currentUser.uid,
         userName: state.userProfile.name,
         comments: 0,
@@ -186,6 +187,7 @@ const store = new Vuex.Store({
         .then(() => {
           fb.postsCollection.doc(data.postId).update({
             comments: parseInt(data.commentsCount) + 1,
+            modifiedOn: new Date().toISOString(),
           });
           Vue.notify({
             text: "Comment added!",
@@ -211,6 +213,7 @@ const store = new Vuex.Store({
         .then(() => {
           fb.postsCollection.doc(data.postId).update({
             likes: parseInt(data.likesCount) + 1,
+            modifiedOn: new Date().toISOString(),
           });
         })
         .catch((err) => {
@@ -232,6 +235,7 @@ const store = new Vuex.Store({
         .then(() => {
           fb.postsCollection.doc(likeToRemove.postId).update({
             likes: parseInt(data.length) - 1,
+            modifiedOn: new Date().toISOString(),
           });
         })
         .catch((err) => {
@@ -246,7 +250,7 @@ const store = new Vuex.Store({
 });
 
 fb.postsCollection
-  .orderBy("createdOn", "desc")
+  .orderBy("modifiedOn", "desc")
   .limit(1)
   .onSnapshot((snapshot) => {
     if (store.state.posts.data.length > 0) {
@@ -254,24 +258,24 @@ fb.postsCollection
         ...snapshot.docs[0].data(),
         id: snapshot.docs[0].id,
       };
-      if (newPostData.userId !== fb.auth.currentUser.uid) {
-        if (
-          !store.state.posts.data.find((post) => post.id === newPostData.id)
-        ) {
+      const isPostExisting = store.state.posts.data.find(
+        (post) => post.id === newPostData.id
+      );
+
+      if (isPostExisting) {
+        store.commit("updateExistingPost", newPostData);
+      } else {
+        if (newPostData.userId !== fb.auth.currentUser.uid) {
           if (
-            !store.state.upcomingPosts.find(
-              (post) => post.id === newPostData.id
-            )
+              !store.state.upcomingPosts.find(
+                  (post) => post.id === newPostData.id
+              )
           ) {
             store.commit("setNewPosts", newPostData);
           } else {
             store.commit("updateUpcomingPost", newPostData);
           }
         }
-      }
-
-      if (store.state.posts.data.find((post) => post.id === newPostData.id)) {
-        store.commit("updateExistingPost", newPostData);
       }
     }
   });
