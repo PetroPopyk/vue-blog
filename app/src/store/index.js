@@ -267,9 +267,9 @@ fb.postsCollection
       } else {
         if (newPostData.userId !== fb.auth.currentUser.uid) {
           if (
-              !store.state.upcomingPosts.find(
-                  (post) => post.id === newPostData.id
-              )
+            !store.state.upcomingPosts.find(
+              (post) => post.id === newPostData.id
+            )
           ) {
             store.commit("setNewPosts", newPostData);
           } else {
